@@ -1,0 +1,32 @@
+services:
+  s3:
+    image: quay.io/minio/minio
+    container_name: local_s3
+    restart: always
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ./data/minio_data:/data
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: password123
+    command: server /data --console-address ":9001"
+
+  db:
+    image: postgres:15
+    container_name: local_rds
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: robotics_metadata
+
+  pipeline:
+    image: edge-to-cloud-robotics-ml-infra-pipeline-task
+    container_name: data_pipeline
+    command: sleep infinity
